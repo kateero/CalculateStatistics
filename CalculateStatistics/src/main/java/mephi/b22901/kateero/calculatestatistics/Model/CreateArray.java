@@ -31,8 +31,8 @@ public class CreateArray {
             names[i] = sheet.getRow(0).getCell(i).getStringCellValue();
 
             XSSFRow rowRead;
-            for (int j = 1; j < numberRow; j++) {
-                rowRead = sheet.getRow(j);
+            for (int j = 0; j < numberRow; j++) {
+                rowRead = sheet.getRow(j + 1);
                 XSSFCell cell = rowRead.getCell(i);
                 if (cell == null) {
                     continue;
@@ -82,18 +82,17 @@ public class CreateArray {
             for (int j = 1; j < numberRow; j++) {
                 rowRead = sheet.getRow(j);
                 XSSFCell cell = rowRead.getCell(i);
-                if (cell == null) {
-                    continue;
-                }
 
                 switch (cell.getCellType()) {
                     case NUMERIC:
                         arrayData[i][j] = cell.getNumericCellValue();
+                        System.out.println(arrayData[i][j]);
                         break;
 
                     case STRING:
                         try {
                             arrayData[i][j] = Double.parseDouble(cell.getStringCellValue().replace(',', '.'));
+                            System.out.println("String");
                         } catch (NumberFormatException ex) {
                             System.err.println("Not number! Row: " + j + " column: " + i);
                         }
@@ -101,9 +100,11 @@ public class CreateArray {
 
                     case FORMULA:
                         arrayData[i][j] = evaluator.evaluate(cell).getNumberValue();
+                        System.out.println("Formula");
                         break;
 
                     default:
+                        System.out.println("default");
                         break;
                 }
             }
@@ -114,8 +115,8 @@ public class CreateArray {
     public double[][] getArray() {
         return arrayData;
     }
-    
-    public String[] getNames(){
+
+    public String[] getNames() {
         return names;
     }
 }

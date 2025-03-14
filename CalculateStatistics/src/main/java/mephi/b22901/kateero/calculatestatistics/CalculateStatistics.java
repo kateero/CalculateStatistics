@@ -9,7 +9,7 @@ public class CalculateStatistics {
         try {
             DataLoader dl = new DataLoader();
             DataStorage ds = new DataStorage(dl.load("C:\\Users\\Катя\\Downloads\\Лаба_1 образцы данных.xlsx"));
-            CreateArray ca = new CreateArray(ds.ReadData(), 2);
+            CreateArray ca = new CreateArray(ds.ReadData(), 1);
             DataCalculate dc = new DataCalculate(ca.getArray(), ca.getNames());
             dc.calculate();
             ds.deleteData();
