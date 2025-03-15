@@ -12,6 +12,7 @@ public class CalculateStatistics {
             CreateArray ca = new CreateArray(ds.ReadData(), 1);
             DataCalculate dc = new DataCalculate(ca.getArray(), ca.getNames());
             dc.calculate();
+            dc.print();
             ds.deleteData();
         
         } catch (IOException ex) {
