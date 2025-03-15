@@ -1,12 +1,7 @@
 package mephi.b22901.kateero.calculatestatistics.Model;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import static java.lang.Double.NaN;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.commons.math3.analysis.function.*;
+import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.commons.math3.stat.correlation.*;
 import org.apache.commons.math3.stat.descriptive.moment.*;
@@ -20,8 +15,8 @@ public class DataCalculate {
     private double[][] data;
     private String[] names;
     private String[] calculations = {"Среднее геометрическое", "Среднее арифметическое", "Оценка стандартного отклонения",
-        "Размах", "Количество элементов", "Коэффициент вариации", "Доверительный интервал",
-        "Оценка дисперсии", "Максимум", "Минимум"};
+        "Размах", "Количество элементов", "Коэффициент вариации", "Доверительный интервал 95%",
+        "Оценка дисперсии", "Максимум", "Минимум", "", "Коэффициенты ковариации"};
 
     public DataCalculate(double[][] data, String[] names) {
         this.data = data;
@@ -38,24 +33,33 @@ public class DataCalculate {
 
         sheet.setColumnWidth(0, 7680);
 
-        for (int i = 0; i < calculations.length; i++) {
+        for (int i = 0; i < calculations.length + names.length; i++) {
             XSSFRow row = sheet.createRow(i + 1);
             XSSFCell cell = row.createCell(0);
-            cell.setCellValue(calculations[i]);
+            
+            if(i > calculations.length - 1){
+                cell.setCellValue(names[i - calculations.length]);
+            } else if (i == calculations.length - 1) {
+                cell.setCellValue(calculations[i]);
+                for (int j = 1; j < data.length + 1; j++) {
+                    cell = row.createCell(j);
+                    cell.setCellValue(names[j - 1]);
+                }
+            } else {
+                cell.setCellValue(calculations[i]);
+            }
         }
-
     }
 
-    public void calculate() {
-
+    public XSSFWorkbook calculate() {
         GeometricMean geomMean = new GeometricMean();
         Mean mean = new Mean();
         StandardDeviation sd = new StandardDeviation();
         NumberUtils numberUtils = new NumberUtils();
-        Covariance cov = new Covariance();
+        RealMatrix cov = new Covariance(data).getCovarianceMatrix();
         Variance var = new Variance();
 
-        double[] results = new double[calculations.length];
+        double[] results = new double[calculations.length - 2];
 
         for (int i = 0; i < data.length; i++) {
             results[0] = geomMean.evaluate(data[i]);
@@ -64,33 +68,29 @@ public class DataCalculate {
             results[3] = numberUtils.max(data[i]) - numberUtils.min(data[i]);
             results[4] = data[i].length;
             results[5] = sd.evaluate(data[i]) / mean.evaluate(data[i]);
-            results[6] = 4;
+            results[6] = 1.96 * results[5] / Math.sqrt(results[4]);
             results[7] = var.evaluate(data[i]);
             results[8] = numberUtils.max(data[i]);
             results[9] = numberUtils.min(data[i]);
 
+            calculated.getSheet("Results").setColumnWidth(i + 1, 3840);
+
             for (int j = 0; j < results.length; j++) {
                 XSSFRow row = calculated.getSheet("Results").getRow(j + 1);
                 XSSFCell cell = row.createCell(i + 1);
-                cell.setCellValue(results[j]);
+                if (Double.isNaN(results[j])) {
+                    cell.setCellValue("-");
+                } else {
+                    cell.setCellValue(results[j]);
+                }
+            }
+            
+            for (int j = 0; j < data.length; j++) {
+                XSSFRow row = calculated.getSheet("Results").getRow(results.length + j + 3);
+                XSSFCell cell = row.createCell(i + 1);
+                cell.setCellValue(cov.getEntry(i, j));
             }
         }
-
-    }
-
-    public void print() {
-        try {
-            String filePath = "C:\\Users\\Катя\\OneDrive\\Рабочий стол\\Лист Microsoft Excel.xlsx";
-            File file = new File(filePath);
-            FileOutputStream fileOut = new FileOutputStream(file);
-
-            calculated.write(fileOut);
-            calculated.close();
-            fileOut.close();
-        } catch (FileNotFoundException ex) {
-            System.err.println("File not found");
-        } catch (IOException ex) {
-            System.err.println("ERROR");
-        }
+        return calculated;
     }
 }
