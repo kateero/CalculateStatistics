@@ -58,7 +58,6 @@ public class CreateArray {
                         break;
                 }
             }
-            System.out.println("Processed " + i + " column");
         }
     }
 
