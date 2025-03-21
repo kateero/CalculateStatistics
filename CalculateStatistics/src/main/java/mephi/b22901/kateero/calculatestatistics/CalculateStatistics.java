@@ -1,10 +1,11 @@
 package mephi.b22901.kateero.calculatestatistics;
 
-import org.apache.commons.math3.stat.*;
+import mephi.b22901.kateero.calculatestatistics.Controller.Controller;
 
 public class CalculateStatistics {
 
     public static void main(String[] args) {
-        
+       Controller controller = new Controller();
+       controller.process();
     }
 }
