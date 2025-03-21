@@ -1,6 +1,7 @@
 package mephi.b22901.kateero.calculatestatistics.Model;
 
 import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.commons.math3.distribution.TDistribution;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.commons.math3.stat.correlation.*;
@@ -36,8 +37,8 @@ public class DataCalculate {
         for (int i = 0; i < calculations.length + names.length; i++) {
             XSSFRow row = sheet.createRow(i + 1);
             XSSFCell cell = row.createCell(0);
-            
-            if(i > calculations.length - 1){
+
+            if (i > calculations.length - 1) {
                 cell.setCellValue(names[i - calculations.length]);
             } else if (i == calculations.length - 1) {
                 cell.setCellValue(calculations[i]);
@@ -56,19 +57,23 @@ public class DataCalculate {
         Mean mean = new Mean();
         StandardDeviation sd = new StandardDeviation();
         NumberUtils numberUtils = new NumberUtils();
-        RealMatrix cov = new Covariance(data).getCovarianceMatrix();
+        double[][] transposedData = transpose(data);
+        double[][] cov = new Covariance(transposedData).getCovarianceMatrix().getData();
         Variance var = new Variance();
 
         double[] results = new double[calculations.length - 2];
 
         for (int i = 0; i < data.length; i++) {
+            TDistribution tDist = new TDistribution(data[i].length - 1);
+            double tCritical = tDist.inverseCumulativeProbability(1 - 0.05/2);
+            
             results[0] = geomMean.evaluate(data[i]);
             results[1] = mean.evaluate(data[i]);
             results[2] = sd.evaluate(data[i]);
             results[3] = numberUtils.max(data[i]) - numberUtils.min(data[i]);
             results[4] = data[i].length;
             results[5] = sd.evaluate(data[i]) / mean.evaluate(data[i]);
-            results[6] = 1.96 * results[5] / Math.sqrt(results[4]);
+            results[6] = tCritical * results[5] / Math.sqrt(results[4]);
             results[7] = var.evaluate(data[i]);
             results[8] = numberUtils.max(data[i]);
             results[9] = numberUtils.min(data[i]);
@@ -84,13 +89,26 @@ public class DataCalculate {
                     cell.setCellValue(results[j]);
                 }
             }
-            
+
             for (int j = 0; j < data.length; j++) {
                 XSSFRow row = calculated.getSheet("Results").getRow(results.length + j + 3);
                 XSSFCell cell = row.createCell(i + 1);
-                cell.setCellValue(cov.getEntry(i, j));
+                cell.setCellValue(cov[j][i]);
             }
         }
         return calculated;
+    }
+
+    public static double[][] transpose(double[][] matrix) {
+        int rows = matrix.length;
+        int cols = matrix[0].length;
+        double[][] transposed = new double[cols][rows];
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                transposed[j][i] = matrix[i][j];
+            }
+        }
+        return transposed;
     }
 }
