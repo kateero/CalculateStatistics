@@ -3,13 +3,9 @@ package mephi.b22901.kateero.calculatestatistics.Controller;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import mephi.b22901.kateero.calculatestatistics.Model.CreateArray;
-import mephi.b22901.kateero.calculatestatistics.Model.DataCalculate;
-import mephi.b22901.kateero.calculatestatistics.Model.DataLoader;
-import mephi.b22901.kateero.calculatestatistics.Model.DataStorage;
-import mephi.b22901.kateero.calculatestatistics.Model.DataUnloader;
-import mephi.b22901.kateero.calculatestatistics.View.GUI;
-import mephi.b22901.kateero.calculatestatistics.View.ChooseFile;
+import javax.swing.JOptionPane;
+import mephi.b22901.kateero.calculatestatistics.Model.*;
+import mephi.b22901.kateero.calculatestatistics.View.*;
 
 public class Controller {
 
@@ -25,9 +21,12 @@ public class Controller {
 
     public Controller() {
 
-        GUI GUI = new GUI();
+        GUI = new GUI();
         this.dl = dl = new DataLoader();
         this.du = new DataUnloader();
+    }
+
+    public void process() {
 
         GUI.run();
 
@@ -35,18 +34,24 @@ public class Controller {
             ChooseFile chooseRead = new ChooseFile(this, GUI, true);
         });
 
-        GUI.getLoadButton().addActionListener(e -> {
-            dl = new DataLoader();
-            try {
-                ds = new DataStorage(dl.load(this.getReadPath()));
-            } catch (IOException ex) {
-                Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        });
-
         GUI.getCalculateButton().addActionListener(e -> {
-            ca = new CreateArray(ds.ReadData(), this.getNumberSheet());
-            dc = new DataCalculate(ca.getArray(), ca.getNames());
+            if (this.getReadPath() != null) {
+                try {
+                    ds = new DataStorage(dl.load(this.getReadPath()));
+                    ca = new CreateArray(ds.ReadData(), this.getNumberSheet());
+                    dc = new DataCalculate(ca.getArray(), ca.getNames());
+                    JOptionPane.showMessageDialog(null, "Результаты посчитаны", "Успешно", JOptionPane.INFORMATION_MESSAGE);
+                } catch (IllegalArgumentException ex) {
+                    JOptionPane.showMessageDialog(null, "Листа с указанным номером не существует", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                } catch (NullPointerException ex) {
+                    JOptionPane.showMessageDialog(null, "Ошибка чтения файла", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                } catch (IOException ex) {
+                    JOptionPane.showMessageDialog(null, "Что-то пошло не так", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Не выбран файл для чтения", "Ошибка", JOptionPane.ERROR_MESSAGE);
+            }
+
         });
 
         GUI.getWriteButton().addActionListener(e -> {
@@ -54,11 +59,18 @@ public class Controller {
         });
 
         GUI.getUnloadButton().addActionListener(e -> {
-            try {
-                du.unload(dc.calculate(), this.getWritePath());
-                ds.deleteData();
-            } catch (IOException ex) {
-                Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+            if (this.writePath != null) {
+                try {
+                    du.unload(dc.calculate(), this.getWritePath());
+                    ds.deleteData();
+                    JOptionPane.showMessageDialog(null, "Результаты записаны", "Успешно", JOptionPane.INFORMATION_MESSAGE);
+                } catch (NullPointerException ex) {
+                    JOptionPane.showMessageDialog(null, "Данные не загружены", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                } catch (IOException ex) {
+                    JOptionPane.showMessageDialog(null, "Ошибка доступа к файлу", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Не выбран файл для записи", "Ошибка", JOptionPane.ERROR_MESSAGE);
             }
         });
     }
@@ -78,12 +90,12 @@ public class Controller {
     public void setWritePath(String writePath) {
         this.writePath = writePath;
     }
-    
-    public int getNumberSheet(){
+
+    public int getNumberSheet() {
         return numberSheet;
     }
-    
-    public void setNumberSheet(int numberSheet){
+
+    public void setNumberSheet(int numberSheet) {
         this.numberSheet = numberSheet;
     }
 }

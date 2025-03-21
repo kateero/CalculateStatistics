@@ -11,7 +11,6 @@ public class GUI {
 
     private JFrame frame;
     private JButton read;
-    private JButton load;
     private JButton calculate;
     private JButton write;
     private JButton unload;
@@ -22,24 +21,24 @@ public class GUI {
         frame.setSize(500, 300);
         frame.setLocationRelativeTo(null);
 
-        JPanel panel = new JPanel(new GridLayout(5, 1));
+        JPanel panel = new JPanel(new GridLayout(4, 1));
 
-        read = new JButton("Выбрать файл");
-        load = new JButton("Загрузить данные");
+        read = new JButton("Выбрать файл для чтения");
         calculate = new JButton("Рассчитать показатели");
-        write = new JButton("Выбрать файл");
+        write = new JButton("Выбрать файл для записи");
         unload = new JButton("Записать результаты");
 
         read.setFont(new Font("Verdana", Font.PLAIN, 18));
         calculate.setFont(new Font("Verdana", Font.PLAIN, 18));
         write.setFont(new Font("Verdana", Font.PLAIN, 18));
+        unload.setFont(new Font("Verdana", Font.PLAIN, 18));
 
-        read.setBackground(new Color(255, 255, 153));
-        calculate.setBackground(new Color(255, 179, 102));
-        write.setBackground(new Color(230, 190, 255));
+        read.setBackground(new Color(222, 255, 125));
+        calculate.setBackground(new Color(255, 233, 133));
+        write.setBackground(new Color(253, 197, 245));
+        unload.setBackground(new Color(230, 190, 255));
 
         panel.add(read);
-        panel.add(load);
         panel.add(calculate);
         panel.add(unload);
         panel.add(write);
@@ -52,10 +51,6 @@ public class GUI {
 
     public JButton getReadButton() {
         return read;
-    }
-
-    public JButton getLoadButton() {
-        return load;
     }
 
     public JButton getCalculateButton() {

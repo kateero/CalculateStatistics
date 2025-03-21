@@ -6,5 +6,6 @@ public class CalculateStatistics {
 
     public static void main(String[] args) {
        Controller controller = new Controller();
+       controller.process();
     }
 }

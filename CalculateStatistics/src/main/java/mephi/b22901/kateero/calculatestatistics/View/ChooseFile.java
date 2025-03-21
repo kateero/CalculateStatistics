@@ -1,5 +1,6 @@
 package mephi.b22901.kateero.calculatestatistics.View;
 
+import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -30,15 +31,23 @@ public class ChooseFile {
         readFrame.getContentPane().setLayout(new FlowLayout());
 
         JTextField filePathField = new JTextField(30);
+        filePathField.setBackground(Color.WHITE);
         filePathField.setEditable(false);
 
         JTextArea areaNumberSheet = new JTextArea("Введите номер листа");
+        areaNumberSheet.setFont(new Font("Verdana", Font.PLAIN, 14));
+        areaNumberSheet.setBackground(new Color(245, 235, 224));
         areaNumberSheet.setEditable(false);
         areaNumberSheet.setFont(new Font("Verdana", Font.PLAIN, 14));
         JTextField sheetNumber = new JTextField(5);
 
         chooseFile = new JButton("Выбрать файл");
         end = new JButton("Завершить");
+        
+        chooseFile.setBackground(new Color(255, 200, 221));
+        chooseFile.setFont(new Font("Verdana", Font.PLAIN, 12));
+        end.setBackground(new Color(255, 200, 221));
+        end.setFont(new Font("Verdana", Font.PLAIN, 12));
 
         readFrame.getContentPane().add(filePathField);
         readFrame.getContentPane().add(chooseFile);
@@ -47,6 +56,7 @@ public class ChooseFile {
             readFrame.getContentPane().add(sheetNumber);
         }
         readFrame.getContentPane().add(end);
+        readFrame.getContentPane().setBackground(new Color(245, 235, 224));
 
         readFrame.setVisible(true);
 
