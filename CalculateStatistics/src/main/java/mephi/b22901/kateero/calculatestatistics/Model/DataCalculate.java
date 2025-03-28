@@ -2,7 +2,6 @@ package mephi.b22901.kateero.calculatestatistics.Model;
 
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.math3.distribution.TDistribution;
-import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.commons.math3.stat.correlation.*;
 import org.apache.commons.math3.stat.descriptive.moment.*;
@@ -72,8 +71,8 @@ public class DataCalculate {
             results[2] = sd.evaluate(data[i]);
             results[3] = numberUtils.max(data[i]) - numberUtils.min(data[i]);
             results[4] = data[i].length;
-            results[5] = sd.evaluate(data[i]) / mean.evaluate(data[i]);
-            results[6] = tCritical * results[5] / Math.sqrt(results[4]);
+            results[5] = results[2] * 100 / results[1];
+            results[6] = tCritical * results[2] / Math.sqrt(results[4]);
             results[7] = var.evaluate(data[i]);
             results[8] = numberUtils.max(data[i]);
             results[9] = numberUtils.min(data[i]);

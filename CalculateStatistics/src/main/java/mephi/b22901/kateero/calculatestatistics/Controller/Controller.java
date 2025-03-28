@@ -1,8 +1,6 @@
 package mephi.b22901.kateero.calculatestatistics.Controller;
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import mephi.b22901.kateero.calculatestatistics.Model.*;
 import mephi.b22901.kateero.calculatestatistics.View.*;
